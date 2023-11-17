@@ -1,0 +1,227 @@
+<%- include("partials/other_header") -%>      
+
+<center><h2>Upload minimum 5 images.</h2></center>
+<center><p id="para">0 images uploaded.</p></center>
+<center><p id="para2"></p></center>
+<center><button class="hide" id="submit_btn" type="submit" method="post">Submit</button></center>
+
+<div class="wrapper">
+    <div class="gen-container">
+    <div class="gen-image-container">
+        <img id="image" />
+    </div>
+    <div class="gen-preview-container">
+        <img id="preview-image" />
+    </div>
+    </div>
+    <form id="image-upload-form" action="/saveImage" method="post" enctype="multipart/form-data">
+        <input type="file" id="file" name="image" accept="image/*" />
+        <label for="file">Choose A Photo</label>
+        <div class="options hide">
+        <input
+            type="number"
+            id="height-input"
+            placeholder="Enter Height"
+            max="780"
+        />
+        <input
+            type="number"
+            id="width-input"
+            placeholder="Enter Width"
+            max="780"
+        />
+        <button class="aspect-ratio-button">16:9</button>
+        <button class="aspect-ratio-button">4:3</button>
+        <button class="aspect-ratio-button">1:1</button>
+        <button class="aspect-ratio-button">2:3</button>
+        <button class="aspect-ratio-button">Free</button>
+        </div>
+        <div class="btns">
+        <button id="preview" class="hide">Preview</button>
+        <!-- <a href="" type="submit" id="upload" class="hide">Upload</a> -->
+        <button type="submit" id="upload" class="hide">Upload</button>
+
+    </form>
+    
+    </div>
+</div>
+
+<br><br>  <br><br>
+<br><br>
+<br><br>
+<br><br>  <br><br>
+<br><br>
+<br><br>
+<br><br>  <br><br>
+
+
+<%- include("partials/footer") -%>
+
+
+<!-- Script -->
+<script>
+
+const form = document.getElementById('image-upload-form');
+let fileInput = document.getElementById("file");
+let image = document.getElementById("image");
+let uploadButton = document.getElementById("upload");
+let aspectRatio = document.querySelectorAll(".aspect-ratio-button");
+const previewButton = document.getElementById("preview");
+const previewImage = document.getElementById("preview-image");
+const options = document.querySelector(".options");
+const widthInput = document.getElementById("width-input");
+const heightInput = document.getElementById("height-input");
+let cropper = "";
+let fileName = "";
+let para = document.getElementById("para");
+let para2 = document.getElementById("para2");
+let uploaded_imgs_array = [];
+let submit_btn = document.getElementById("submit_btn");
+
+fileInput.onchange = () => {
+    previewImage.src = "";
+    heightInput.value = 0;
+    widthInput.value = 0;
+    uploadButton.classList.add("hide");
+
+    //The FileReader object helps to read contents of file stored on the computer
+    let reader = new FileReader();
+    //readAsDataURL reads the content of input file
+    reader.readAsDataURL(fileInput.files[0]);
+
+    reader.onload = () => {
+    image.setAttribute("src", reader.result);
+    if (cropper) {
+        cropper.destroy();
+    }
+    //Initialize cropper
+    cropper = new Cropper(image);
+    options.classList.remove("hide");
+    previewButton.classList.remove("hide");
+    };
+    fileName = fileInput.files[0].name.split(".")[0];
+};
+
+//Set aspect ration
+aspectRatio.forEach((element) => {
+    element.addEventListener("click", () => {
+    if (element.innerText == "Free") {
+        cropper.setAspectRatio(NaN);
+    } else {
+        cropper.setAspectRatio(eval(element.innerText.replace(":", "/")));
+    }
+    });
+});
+
+heightInput.addEventListener("input", () => {
+    const { height } = cropper.getImageData();
+    if (parseInt(heightInput.value) > Math.round(height)) {
+    heightInput.value = Math.round(height);
+    }
+    let newHeight = parseInt(heightInput.value);
+    cropper.setCropBoxData({ height: newHeight });
+});
+widthInput.addEventListener("input", () => {
+    const { width } = cropper.getImageData();
+    if (parseInt(widthInput.value) > Math.round(width)) {
+    widthInput.value = Math.round(width);
+    }
+    let newWidth = parseInt(widthInput.value);
+    cropper.setCropBoxData({ width: newWidth });
+});
+
+previewButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    uploadButton.classList.remove("hide");
+    let imgSrc = cropper.getCroppedCanvas({}).toDataURL();
+    //Set preview
+    previewImage.src = imgSrc;
+    // uploadButton.upload = `cropped_${fileName}.png`;
+    uploadButton.setAttribute("href", imgSrc);
+});
+
+uploadButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    let imgSrc = cropper.getCroppedCanvas({}).toDataURL();
+
+
+    uploadButton.classList.add("hide");
+    para.innerHTML = parseInt(para.innerHTML) + 1 + " images uploaded.";
+    // uploadButton.upload = `cropped_${fileName}.png`;
+    uploaded_imgs_array.push(imgSrc);
+    uploadButton.setAttribute("href", imgSrc);
+
+    cropper.destroy();
+    cropper = "";
+    fileInput.value = "";
+    image.setAttribute("src", "");
+    previewImage.setAttribute("src", "");
+    options.classList.add("hide");
+    previewButton.classList.add("hide");
+
+    if(para.innerHTML == "10 images uploaded."){
+        para2.innerHTML = "That's the maximum number of images that you can upload. Please click on submit button to submit the images.";
+    }
+    if (para.innerHTML == "5 images uploaded.") {
+        submit_btn.classList.remove("hide");
+    }
+});
+
+// submit_btn.addEventListener("click", (e) => {
+//     e.preventDefault();
+//     const data = { uploaded_imgs_array: uploaded_imgs_array };
+//     const formData = new FormData();
+//     formData.append("array", uploaded_imgs_array);
+
+//     fetch('/saveImages', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         body: formData,
+//     })
+//     .then((response) => {
+//         if (response.status === 200) {
+//             alert('Images uploaded successfully.');
+//             window.location.href = '/generate';
+//         } else {
+//             alert('Something went wrong.');
+//         }
+//     })
+//     .catch((error) => {
+//         console.error('Error:', error);
+//     });
+// });
+
+
+// window.onload = () => {
+//     upload.classList.add("hide");
+//     options.classList.add("hide");
+//     previewButton.classList.add("hide");
+// };
+form.addEventListener('submit', (e) => {
+    e.preventDefault(); // Prevent the default form submission
+
+    const formData = new FormData();
+    formData.append('image', fileInput.files[0]); // 'image' should match the input field name
+
+    fetch('/saveImage', {
+        method: 'POST',
+        body: formData,
+    })
+    .then((response) => {
+        if (response.status === 200) {
+            alert('Image uploaded successfully.');
+            // Handle success, e.g., redirect or update UI
+        } else {
+            alert('Something went wrong.');
+            // Handle error
+        }
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        // Handle error
+    });
+});
+
+</script>

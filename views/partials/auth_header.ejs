@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MakeMyDP</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/media-queries.css">
+    <!-- Include Cropper.js from a CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.6/cropper.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.6/cropper.min.css">
+
+</head>
+<body>
+    
+    <!-- top banner -- To run: nodemon app.js -->
+
+    <div class="top-banner">
+        <div class="container">
+            <div class="small-bold-text banner-text">📸 Create professional looking headshots in seconds.</div>
+        </div>
+    </div>
+
+    <!-- nav bar -->
+    <nav>
+        <div class="container main-nav flex">
+            <a href="/auth_home" class="company-logo">
+                <img src="/assets2/asset 1.png" alt="company logo">
+            </a>
+            <div class="nav-links" id="nav-links">
+                <ul class="flex">
+                    <li><a href="#pricing-section" class="hover-link">Pricing</a></li>
+                    <li><a href="#resource-section" class="hover-link">Resources</a></li>
+                    <li><a href="#bottom-section" class="hover-link">Connect</a></li>
+                    <p>Hello, <%= user_name %>!</p>
+                    <a class="hover-link secondary-button" href="/logout" role="button">Log Out</a>
+                </ul>
+            </div>
+            <a href="#" class="nav-toggle hover-link" id="nav-toggle">
+                <i class="fa-solid fa-bars"></i>
+            </a>
+        </div>
+    </nav>
+
+
+<script src="https://kit.fontawesome.com/c1fc3d2826.js" crossorigin="anonymous"></script>
+    
+<!-- for responsive navbar -->
+<script>
+    const toggleButton = document.getElementById('nav-toggle');
+    const navLinks = document.getElementById('nav-links');
+    
+    toggleButton.addEventListener('click', () => {
+        toggleButton.classList.toggle('active');
+        navLinks.classList.toggle('active');
+    })   
+</script>
+
+<!-- for scrolling -->
+
+<script>
+    // Function to scroll to the target section smoothly
+    function scrollToBottom() {
+        const targetSection = document.querySelector('#bottom-section');
+        targetSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    function scrollToResource() {
+        const targetSection = document.querySelector('#resource-section');
+        targetSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    function scrollToPricing(){
+        const targetSection = document.querySelector('#pricing-section');
+        targetSection.scrollIntoView({ behavior: 'smooth'});
+    }
+
+    // Add an event listener to the link
+    const scrollLink_connect = document.querySelector('a[href="#bottom-section"]');
+    const scrollLink_resource = document.querySelector('a[href="#resource-section"]');
+    const scrollLink_pricing = document.querySelector('a[href="#pricing-section"]');
+
+    scrollLink_connect.addEventListener('click', function (e) {
+        e.preventDefault(); // Prevent the default link behavior
+        scrollToBottom();
+    });
+    scrollLink_resource.addEventListener('click', function (e) {
+        e.preventDefault(); // Prevent the default link behavior
+        scrollToResource();
+    });
+    scrollLink_pricing.addEventListener('click', function (e) {
+        e.preventDefault(); // Prevent the default link behavior
+        scrollToPricing();
+    });
+</script>
+

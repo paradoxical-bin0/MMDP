@@ -1,0 +1,58 @@
+<%- include("partials/auth_other_header") -%>
+
+
+<div class="mainscreen">
+    <!-- <img src="https://image.freepik.com/free-vector/purple-background-with-neon-frame_52683-34124.jpg"  class="bgimg " alt="">--> 
+      <div class="card2">
+        <div class="leftside">
+          <img
+            src="/assets2/asset 40.png"
+            class="product"
+            alt="Shoes"
+          />
+        </div>
+        <div class="rightside">
+          <form action="/checkout" method="POST">
+            <h1>CheckOut</h1>
+            <h2>Payment Information</h2>
+            <p>Cardholder Name</p>
+            <input type="text" class="inputbox" name="name" required />
+            <p>Card Number</p>
+            <input type="number" class="inputbox" name="card_number" id="card_number" required />
+
+            <p>Card Type</p>
+            <select class="inputbox" name="card_type" id="card_type" required>
+              <option value="">--Select a Card Type--</option>
+              <option value="Visa">Visa</option>
+              <option value="RuPay">RuPay</option>
+              <option value="MasterCard">MasterCard</option>
+            </select>
+
+            <p>Plan Type</p>
+            <select class="inputbox" name="plan_type" id="plan_type" required>
+              <option value="">--Select a Plan Type--</option>
+              <option value="Basic">Basic</option>
+              <option value="Premium">Premium</option>
+              <option value="Enterprise">Enterprise</option>
+            </select>
+
+        <div class="expcvv">
+            <p class="expcvv_text">Expiry</p>
+            <input type="date" class="inputbox" name="exp_date" id="exp_date" required />
+
+            <p class="expcvv_text2">CVV</p>
+            <input type="password" class="inputbox" name="cvv" id="cvv" required />
+        </div>
+            <p></p>
+            <button type="submit" class="button">CheckOut</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  
+
+
+
+
+<%- include("partials/auth_footer") -%>
+

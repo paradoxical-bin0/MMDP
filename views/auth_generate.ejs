@@ -1,0 +1,325 @@
+<%- include("partials/auth_other_header") -%>      
+
+<div id="content">
+    <br><br>
+    <center><h2 id="heading">Upload minimum 5 images. Maximum 10 images can be uploaded.</h2></center>
+    <center><p id="para">0 images uploaded.</p></center>
+    <center><p id="para2"></p></center>
+    <center><button class="hide" id="submit_btn" type="submit" method="post">Submit</button></center>
+
+    <div class="wrapper">
+        <div class="gen-container">
+        <div class="gen-image-container">
+            <img id="image" />
+        </div>
+        <div class="gen-preview-container">
+            <img id="preview-image" />
+        </div>
+        </div>
+        <form id="image-upload-form" action="/saveImage" method="post" enctype="multipart/form-data">
+            <input type="file" id="file" accept="image/*" />
+            <!-- Add a hidden input field for storing the cropped image data -->
+            <input type="hidden" id="cropped-image" name="image" />
+
+            <label for="file">Choose A Photo</label>
+            <div class="options hide">
+            <input
+                type="number"
+                id="height-input"
+                placeholder="Enter Height"
+                max="780"
+            />
+            <input
+                type="number"
+                id="width-input"
+                placeholder="Enter Width"
+                max="780"
+            />
+            <button type="button" class="aspect-ratio-button">16:9</button>
+            <button type="button" class="aspect-ratio-button">4:3</button>
+            <button type="button" class="aspect-ratio-button">1:1</button>
+            <button type="button" class="aspect-ratio-button">2:3</button>
+            <button type="button" class="aspect-ratio-button">Free</button>
+            </div>
+            <div class="btns">
+            <button id="preview" class="hide">Preview</button>
+            <!-- <a href="" type="submit" id="upload" class="hide">Upload</a> -->
+            <button type="submit" id="upload" class="hide">Upload</button>
+            </div>
+
+        </form>
+
+        <div class="slideshowContainer">
+            <img id="slideshowImage" src="" style="width: 100%; display: none;">
+        </div>  
+        <br>       
+        <div id="slideshowButtons" class="slideshow-button-container">
+            <button style="display: none;" type="button" id="prevButton" class="slideshow-button">Previous</button>
+            <button style="display: none;" type="button" id="nextButton" class="slideshow-button">Next</button>
+        </div>  
+        </div>
+    </div>
+
+
+<br><br>  <br><br>
+<br><br>
+<br><br>
+<br><br>  <br><br>
+<br><br>
+<br><br>
+<br><br>  <br><br>
+
+<br><br>  <br><br>
+
+</div>
+<%- include("partials/auth_footer") -%>
+
+
+<!-- Script -->
+<script>
+
+const form = document.getElementById('image-upload-form');
+let fileInput = document.getElementById("file");
+let image = document.getElementById("image");
+let uploadButton = document.getElementById("upload");
+let aspectRatio = document.querySelectorAll(".aspect-ratio-button");
+const previewButton = document.getElementById("preview");
+const previewImage = document.getElementById("preview-image");
+const options = document.querySelector(".options");
+const widthInput = document.getElementById("width-input");
+const heightInput = document.getElementById("height-input");
+let cropper = "";
+let fileName = "";
+let para = document.getElementById("para");
+let para2 = document.getElementById("para2");
+let uploaded_imgs_array = [];
+let submit_btn = document.getElementById("submit_btn");
+const content = document.getElementById("content");
+const heading = document.getElementById("heading");
+
+// for slideshow
+let cropped_imgs_array = [];
+const slideshowImage = document.getElementById('slideshowImage');
+const slideShowContainer = document.getElementsByClassName('slideshowContainer');
+const button_section = document.getElementById("slideshowButtons");
+
+fileInput.onchange = () => {
+    previewImage.src = "";
+    heightInput.value = 0;
+    widthInput.value = 0;
+    uploadButton.classList.add("hide");
+
+    //The FileReader object helps to read contents of file stored on the computer
+    let reader = new FileReader();
+    //readAsDataURL reads the content of input file
+    reader.readAsDataURL(fileInput.files[0]);
+
+    reader.onload = () => {
+        image.setAttribute("src", reader.result);
+        if (cropper) {
+            cropper.destroy();
+        }
+        //Initialize cropper
+        cropper = new Cropper(image);
+        options.classList.remove("hide");
+        previewButton.classList.remove("hide");
+    };
+    fileName = fileInput.files[0].name.split(".")[0];
+};
+
+//Set aspect ration
+aspectRatio.forEach((element) => {
+    element.addEventListener("click", () => {
+    if (element.innerText == "Free") {
+        cropper.setAspectRatio(NaN);
+    } else {
+        cropper.setAspectRatio(eval(element.innerText.replace(":", "/")));
+    }
+    });
+});
+
+heightInput.addEventListener("input", () => {
+    const { height } = cropper.getImageData();
+    if (parseInt(heightInput.value) > Math.round(height)) {
+    heightInput.value = Math.round(height);
+    }
+    let newHeight = parseInt(heightInput.value);
+    cropper.setCropBoxData({ height: newHeight });
+});
+widthInput.addEventListener("input", () => {
+    const { width } = cropper.getImageData();
+    if (parseInt(widthInput.value) > Math.round(width)) {
+    widthInput.value = Math.round(width);
+    }
+    let newWidth = parseInt(widthInput.value);
+    cropper.setCropBoxData({ width: newWidth });
+});
+
+previewButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    uploadButton.classList.remove("hide");
+    let imgSrc = cropper.getCroppedCanvas({}).toDataURL("image/png");
+    document.getElementById("cropped-image").value = imgSrc;
+    //Set preview
+    previewImage.src = imgSrc;
+    cropped_imgs_array.push(imgSrc);
+    // uploadButton.upload = `cropped_${fileName}.png`;
+    // uploadButton.setAttribute("href", imgBlob);
+    // console.log(uploadButton.getAttribute("href"));
+});
+
+function getCroppedImageBlob() {
+  if (cropper) {
+    const croppedCanvas = cropper.getCroppedCanvas();
+    if (croppedCanvas) {
+      return new Promise((resolve) => {
+        croppedCanvas.toBlob((blob) => {
+          resolve(blob);
+        });
+      });
+    }
+  }
+  return null;
+}
+
+// uploadButton.addEventListener("click", (e) => {
+//     e.preventDefault();
+
+//     uploadButton.classList.add("hide");
+//     para.innerHTML = parseInt(para.innerHTML) + 1 + " images uploaded.";
+//     // uploadButton.upload = `cropped_${fileName}.png`;
+
+//     cropper.destroy();
+//     cropper = "";
+//     fileInput.value = "";
+//     image.setAttribute("src", "");
+//     previewImage.setAttribute("src", "");
+//     options.classList.add("hide");
+//     previewButton.classList.add("hide");
+
+//     if(para.innerHTML == "10 images uploaded."){
+//         para2.innerHTML = "That's the maximum number of images that you can upload. Please click on submit button to submit the images.";
+//     }
+//     if (para.innerHTML == "5 images uploaded.") {
+//         submit_btn.classList.remove("hide");
+//     }
+// });
+
+submit_btn.addEventListener("click", (e) => {
+    form.classList.add("hide");
+    submit_btn.classList.add("hide");
+    para.classList.add("hide");
+    para2.classList.add("hide");
+    heading.innerText = "Your images have been uploaded successfully. Thank you for choosing MakeMyDP. Your headshots will be ready soon.";
+   // content.innerHTML = "<br><br><center><h3>Your images have been uploaded successfully.<br> Thank you for choosing MakeMyDP.<br> Your headshots will be ready soon.</h3></center><br><br>";
+   startSlideshow(cropped_imgs_array);
+});
+
+function startSlideshow(imageUrls) {
+    const prevButton = document.getElementById('prevButton');
+    const nextButton = document.getElementById('nextButton');
+    let currentIndex = 0;
+
+    // Function to update the display of previous and next buttons
+    function updateButtons() {
+        slideshowImage.src = imageUrls[currentIndex];
+        slideshowImage.style.display = "block";
+            if (currentIndex === 0) {
+                prevButton.style.display = "none";
+                nextButton.style.display = "block";
+            } else if (currentIndex === imageUrls.length - 1) {
+                prevButton.style.display = "block";
+                nextButton.style.display = "none";
+            } else {
+                prevButton.style.display = "block";
+                nextButton.style.display = "block";
+            }
+    }
+
+    // Update the buttons initially
+    updateButtons();
+    
+    // Add click event listeners to the previous and next buttons
+    prevButton.addEventListener('click', () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            slideshowImage.src = imageUrls[currentIndex];
+            updateButtons();
+        }
+    });
+
+    nextButton.addEventListener('click', () => {
+        if (currentIndex < imageUrls.length - 1) {
+            currentIndex++;
+            slideshowImage.src = imageUrls[currentIndex];
+            updateButtons();
+        }
+    });
+}
+
+form.addEventListener('submit', async (e) => {
+    e.preventDefault(); // Prevent the default form submission
+
+    // Other funstionalities
+
+    uploadButton.classList.add("hide");
+    para.innerHTML = parseInt(para.innerHTML) + 1 + " images uploaded.";
+
+    // cropper.destroy();
+    // cropper = "";
+    fileInput.value = "";
+    image.setAttribute("src", "");
+    previewImage.setAttribute("src", "");
+    options.classList.add("hide");
+    previewButton.classList.add("hide");
+
+    if(para.innerHTML == "10 images uploaded."){
+        para2.innerHTML = "That's the maximum number of images that you can upload. Please click on submit button to submit the images.";
+    }
+    if (para.innerHTML == "5 images uploaded.") {
+        submit_btn.classList.remove("hide");
+    }
+
+    /////////////////////////////
+
+    const croppedImageBlob = await getCroppedImageBlob();
+    if (croppedImageBlob) {
+        const formData = new FormData();
+        // Converting blob to file
+        const file = new File([croppedImageBlob], "filename.jpg", { type: "image/jpeg" });
+        formData.append('image', file);
+
+        fetch('/saveImage', {
+            method: 'POST',
+            body: formData,
+        })
+        .then((response) => {
+            if (response.status === 200) {
+                console.log('Image uploaded successfully.');
+                cropper.destroy();
+                cropper = "";
+                // Handle success, e.g., redirect or update UI
+            } else {
+                console.log('Something went wrong.');
+                // Handle error
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            // Handle error
+        });
+    }
+});
+
+window.onload = () => {
+    upload.classList.add("hide");
+    options.classList.add("hide");
+    previewButton.classList.add("hide");
+};
+
+</script>
+
+
+
+
+

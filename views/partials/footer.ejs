@@ -1,0 +1,58 @@
+    <!-- footer -->
+
+    <footer id="bottom-section">
+        <div class="container flex footer-container">
+            <a href="/" class="company-logo">
+                <img src="/assets2/asset 1.png" alt="company logo">
+            </a>
+            <div class="link-column flex">
+                <h4>More Online AI Tools</h4>
+                <a href="#" class="hover-link">Text-to-Image AI</a>
+                <a href="#" class="hover-link">Photo to AI Art</a>
+                <a href="#" class="hover-link">AI Avatar Generator</a>
+                <a href="#" class="hover-link">AI Background Remover</a>
+                <a href="#" class="hover-link">AI Editor</a>
+            </div>
+            <div class="link-column flex">
+                <h4>Make My DP</h4>
+                <a href="/" class="hover-link">Overview</a>
+                <a href="#pricing-section" class="hover-link">Pricing</a>
+                <a href="#" class="hover-link">Sagar Upadhyay</a>
+                <a href="#" class="hover-link">Lishita Savla</a>
+                <a href="#" class="hover-link">Shreyanshi Bhatt</a>
+            </div>
+            <div class="link-column flex">
+                <h4>Connect with Us</h4>
+                <a class="hover-link" href="#"><i class="fa-brands fa-instagram"></i> Instagram</a>
+                <a class="hover-link" href="#"><i class="fa-brands fa-facebook"></i> Facebook</a>
+                <a class="hover-link" href="#"><i class="fa-brands fa-twitter"></i> Twitter</a>
+                <a class="hover-link" href="#"><i class="fa-brands fa-linkedin"></i> LinkedIn</a>
+                <a class="hover-link" href="#"><i class="fa-brands fa-discord"></i> Discord</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- copyright -->
+
+    <div class="subfooter">
+        <div class="container flex subfooter-container">
+            <p>Copyright © 2023, All Rights Reserved</p>
+        </div>
+    </div>
+
+    <script>
+        // Function to scroll to the target section smoothly
+        function scrollToPricing(){
+            const targetSection = document.querySelector('#pricing-section');
+            targetSection.scrollIntoView({ behavior: 'smooth'});
+        }
+    
+        // Add an event listener to the link
+        const scrollLink_pricing = document.querySelector('a[href="#pricing-section"]');
+    
+        scrollLink_pricing.addEventListener('click', function (e) {
+            e.preventDefault(); // Prevent the default link behavior
+            scrollToPricing();
+        });
+    </script>
+    
