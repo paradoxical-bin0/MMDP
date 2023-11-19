@@ -724,3 +724,12 @@ p{
     box-shadow: 3px 3px 6px #38373785;
     cursor: pointer;
 }
+
+
+/* Admin section */
+.user_images{
+    height: 50%;
+    width: 50%;
+    margin: 2%;
+}
+

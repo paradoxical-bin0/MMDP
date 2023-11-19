@@ -1,0 +1,28 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/media-queries.css">
+</head>
+<body>
+<br>
+<center><h3><%=username %>'s Cropped Pics</h3></center>
+<% if (images && images.length > 0) { %>
+    <center><div class="image-gallery">
+      <% images.forEach((image, index) => { %>
+        <img class="user_images" src="data:<%= image.contentType %>;base64,<%= image.data.toString('base64') %>" alt="Image" />
+        <center>
+            <a href="data:<%= image.contentType %>;base64,<%= image.data.toString('base64') %>" download="<%=username %>_image_<%= index + 1 %>">
+              <button class="primary-button">Download Image <%= index + 1 %></button>
+            </a>
+        </center>
+      <% }) %>
+    </div></center>
+  <% } else { %>
+    <p>No images found for <%= username %></p>
+  <% } %>
+
+</body>

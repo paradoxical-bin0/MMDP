@@ -43,11 +43,14 @@ const customerSchema = new mongoose.Schema({
   password: String,
   googleId: String,
   plan: String,
+  email: String
 });
 const Customer = new mongoose.model("Customer", customerSchema);
 
 const imageSchema = new mongoose.Schema({
-  filename: String
+  username: String,
+  data: Buffer,
+  contentType: String,
 });
 
 const Image = mongoose.model('Image', imageSchema);
@@ -112,7 +115,8 @@ passport.use(new LocalStrategy((username, password, done) => { //done is a callb
         //const username = Array.isArray(profile.emails) && profile.emails.length > 0 ? profile.emails[0].value.split('@')[0] : '';
         const newCustomer = new Customer({
           username: profile.displayName,
-          googleId: profile.id
+          googleId: profile.id,
+          email: profile.emails ? profile.emails[0].value : null
         });
         customer = await newCustomer.save();
       }
@@ -234,16 +238,44 @@ app.get("/auth/google/mmd", passport.authenticate("google", {
 
 // Post routes
 
-// Download route
-app.get("/download/:userId", function(req,res){
-    const requestedID = req.params.userId;
+// Admin route
+// Add a new route to display the image
+// app.get('/admin/image/:imageId', async (req, res) => {
+//   try {
+//     const imageId = req.params.imageId;
+//     const foundImage = await Image.findById(imageId);
 
-    Customer.findOne({_id: requestedID}).then((found_user) => {
-        res.render("download", {Username: found_user.username});
-    }).catch((err) => {
-        console.log(err);
-    });
+//     if (!foundImage) {
+//       return res.status(404).send('Image not found');
+//     }
+
+//     // Set the appropriate content type for the response
+//     res.set('Content-Type', foundImage.contentType);
+//     res.send(foundImage.data);
+//     res.render('admin', { image_url: foundImage, username: foundImage.username }); 
+//   } catch (err) {
+//     console.error('Error fetching image:', err);
+//     res.status(500).send('Error fetching image');
+//   }
+// });
+
+app.get('/admin/images/:username', async (req, res) => {
+  try {
+    const username = req.params.username;
+    const foundImages = await Image.find({ username });
+
+    if (!foundImages || foundImages.length === 0) {
+      return res.status(404).send('No images found for this username');
+    }
+
+    res.render('admin', { images: foundImages, username: username });
+  } catch (err) {
+    console.error('Error fetching images:', err);
+    res.status(500).send('Error fetching images');
+  }
 });
+
+
 
 app.post("/register", function(req, res) {
     bcrypt.hash(req.body.password, 10, function(err, hash) { // 10 is SaltRounds
@@ -267,28 +299,63 @@ app.post('/', passport.authenticate('local', {
 }));
 
 // Handling images
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'public/images'); // Specify the directory where the files will be saved
-  },
-  filename: (req, file, cb) => {
-    // Generate a unique filename for the uploaded file
-    cb(null, Date.now() + '_' + file.originalname);
-  },
-});
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'public/images'); // Specify the directory where the files will be saved
+//   },
+//   filename: (req, file, cb) => {
+//     // Generate a unique filename for the uploaded file
+//     cb(null, Date.now() + '_' + file.originalname);
+//   },
+// });
 
+// const upload = multer({ storage: storage });
+// app.post('/saveImage',upload.single('image') , async (req, res) => {
+//    // Assuming 'images' is the name of the file input field in your HTML form
+//   res.status(200).send('Images uploaded successfully');
+// });
+
+// Storing images in database
+// // Multer storage setup
+const storage = multer.memoryStorage(); // Store files in memory
 const upload = multer({ storage: storage });
-app.post('/saveImage',upload.single('image') , async (req, res) => {
-   // Assuming 'images' is the name of the file input field in your HTML form
-  res.status(200).send('Images uploaded successfully');
-});
 
+// POST route for saving images to MongoDB
+app.post('/saveImage', upload.single('image'), async (req, res) => {
+  try {
+    let name = 'Vishwang'; // Initialize name variable outside the conditional block
+
+    if (req.isAuthenticated()) {
+      // You can access the authenticated user's data from req.user
+      const user = req.user;
+  
+      if (user && user.username) {
+        name = user.username;
+      }
+    }
+
+    if (!req.file) {
+      return res.status(400).send('No file uploaded');
+    }
+
+    const newImage = new Image({
+      username: name,
+      data: req.file.buffer, // Binary data of the image
+      contentType: req.file.mimetype, // Mime type of the image
+    });
+
+    await newImage.save();
+    res.status(200).send('Image uploaded successfully');
+  } catch (err) {
+    console.error('Error uploading image:', err);
+    res.status(500).send('Error uploading image');
+  }
+});
 
 
 
 // listen
 var port = process.env.PORT || 5000;
 app.listen(port, function(){
-    console.log("Server started on port 5000.");
-    console.log("")
+    console.log("Server up & running...");
 });
