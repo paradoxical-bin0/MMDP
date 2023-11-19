@@ -102,7 +102,7 @@ passport.use(new LocalStrategy((username, password, done) => { //done is a callb
   passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: 'https://mmdp.onrender.com/auth/google/mmd'
+    callbackURL: ['https://mmdp.onrender.com/auth/google/mmd', 'http://localhost:5000/auth/google/mmd']
   }, async function(accessToken, refreshToken, profile, done) {
     try {
       // console.log(profile);
