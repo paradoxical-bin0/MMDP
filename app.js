@@ -206,43 +206,43 @@ app.get("/auth/google/mmd", passport.authenticate("google", {
     } else {
       // alert("Please sign in to continue."); --alert doesn't works in node js
       res.redirect("/");
-    }
-  }).post(async function(req, res) {
-    const choosen_plan = req.body.plan_type;
-    let images = 0;
-    if(choosen_plan == 'Basic'){
-        images = 10;
-    }
-    else if(choosen_plan == 'Premium'){
-        images = 100;
-    }
-    else if(choosen_plan == 'Enterprise'){
-        images = 50000;
-    }
-    if (req.isAuthenticated()) {
-      // You can access the authenticated user's data from req.user
-      const user = req.user;
+    }})
+  // }).post(async function(req, res) {
+  //   const choosen_plan = req.body.plan_type;
+  //   let images = 0;
+  //   if(choosen_plan == 'Basic'){
+  //       images = 10;
+  //   }
+  //   else if(choosen_plan == 'Premium'){
+  //       images = 100;
+  //   }
+  //   else if(choosen_plan == 'Enterprise'){
+  //       images = 50000;
+  //   }
+  //   if (req.isAuthenticated()) {
+  //     // You can access the authenticated user's data from req.user
+  //     const user = req.user;
   
-      if (user) {
-        user.plan = choosen_plan;
-        user.imagesLeft = images;
+  //     if (user) {
+  //       user.plan = choosen_plan;
+  //       user.imagesLeft = images;
         
-        try {
-          await user.save();
-          // Redirect or render to the desired page after the update
-          res.render("auth_generate", {
-            images_left: images
-          });
-        } catch (err) {
-          console.error("Error updating user data:", err);
-        }
-      }
-    } else {
-      res.render("generate", {
-        images_left: "1 (As of free trial)"
-      });
-    }
-  });
+  //       try {
+  //         await user.save();
+  //         // Redirect or render to the desired page after the update
+  //         res.render("auth_generate", {
+  //           images_left: images
+  //         });
+  //       } catch (err) {
+  //         console.error("Error updating user data:", err);
+  //       }
+  //     }
+  //   } else {
+  //     res.render("generate", {
+  //       images_left: "1 (As of free trial)"
+  //     });
+  //   }
+  // });
 
 
 
