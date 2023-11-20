@@ -337,7 +337,7 @@ const upload = multer({ storage: storage });
 // POST route for saving images to MongoDB
 app.post('/saveImage', upload.single('image'), async (req, res) => {
   try {
-    let name = 'Vishwang'; // Initialize name variable outside the conditional block
+    let name = 'Sagar'; // Initialize name variable outside the conditional block
 
     if (req.isAuthenticated()) {
       // You can access the authenticated user's data from req.user
