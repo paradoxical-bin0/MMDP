@@ -99,10 +99,20 @@ passport.use(new LocalStrategy((username, password, done) => { //done is a callb
   });
 
   //Google auth
+
+  let callbackURL;
+
+  if (process.env.NODE_ENV === 'production') {
+    callbackURL = 'https://mmdp.onrender.com/auth/google/mmd';
+  } else {
+    callbackURL = 'http://localhost:5000/auth/google/mmd';
+  }
+
+
   passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: ['https://mmdp.onrender.com/auth/google/mmd', 'http://localhost:5000/auth/google/mmd']
+    callbackURL: callbackURL
   }, async function(accessToken, refreshToken, profile, done) {
     try {
       // console.log(profile);
@@ -359,3 +369,6 @@ var port = process.env.PORT || 5000;
 app.listen(port, function(){
     console.log("Server up & running...");
 });
+
+
+
