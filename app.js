@@ -135,12 +135,13 @@ passport.use(new LocalStrategy((username, password, done) => { //done is a callb
       return done(err);
     }
   }));
-  console.log('Environment:', process.env.NODE_ENV);
-  console.log('Callback URL:', callbackURL);
+  
 
 
 app.get("/", function(req,res){
     res.render("home");
+    console.log('Environment:', process.env.NODE_ENV);
+    console.log('Callback URL:', callbackURL);
 });
 
 // gotta add the functionality of only letting customers with plans use this
