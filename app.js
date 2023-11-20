@@ -10,6 +10,8 @@ const passport = require("passport");
 //const FacebookStrategy = require('passport-facebook').Strategy;
 const LocalStrategy = require("passport-local").Strategy;
 const multer = require('multer');
+const MongoStore = require('connect-mongo');
+
 
 
 const app = express();
@@ -29,7 +31,8 @@ app.use(express.static("public"));
 app.use(session({
     secret: "Our little secret.",
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI })
   }));
 
 //auth

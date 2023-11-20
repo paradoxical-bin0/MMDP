@@ -1,4 +1,4 @@
-<%- include("partials/auth_other_header") -%>      
+<%- include("partials/other_header") -%>      
 
 <div id="content">
     <br><br>
@@ -72,7 +72,7 @@
 <br><br>  <br><br>
 
 </div>
-<%- include("partials/auth_footer") -%>
+<%- include("partials/footer") -%>
 
 
 <!-- Script -->
@@ -163,9 +163,6 @@ previewButton.addEventListener("click", (e) => {
     //Set preview
     previewImage.src = imgSrc;
     cropped_imgs_array.push(imgSrc);
-    // uploadButton.upload = `cropped_${fileName}.png`;
-    // uploadButton.setAttribute("href", imgBlob);
-    // console.log(uploadButton.getAttribute("href"));
 });
 
 function getCroppedImageBlob() {
@@ -181,29 +178,6 @@ function getCroppedImageBlob() {
   }
   return null;
 }
-
-// uploadButton.addEventListener("click", (e) => {
-//     e.preventDefault();
-
-//     uploadButton.classList.add("hide");
-//     para.innerHTML = parseInt(para.innerHTML) + 1 + " images uploaded.";
-//     // uploadButton.upload = `cropped_${fileName}.png`;
-
-//     cropper.destroy();
-//     cropper = "";
-//     fileInput.value = "";
-//     image.setAttribute("src", "");
-//     previewImage.setAttribute("src", "");
-//     options.classList.add("hide");
-//     previewButton.classList.add("hide");
-
-//     if(para.innerHTML == "10 images uploaded."){
-//         para2.innerHTML = "That's the maximum number of images that you can upload. Please click on submit button to submit the images.";
-//     }
-//     if (para.innerHTML == "5 images uploaded.") {
-//         submit_btn.classList.remove("hide");
-//     }
-// });
 
 submit_btn.addEventListener("click", (e) => {
     form.classList.add("hide");
@@ -300,8 +274,11 @@ form.addEventListener('submit', async (e) => {
                 cropper = "";
                 // Handle success, e.g., redirect or update UI
             } else {
-                console.log('Something went wrong.');
-                // Handle error
+                console.log('Server responded with an error:', response.status);
+                return response.text().then((errorMessage) => {
+                    console.log('Error message:', errorMessage);
+                    // Handle error
+                });
             }
         })
         .catch((error) => {
